@@ -1,0 +1,20 @@
+/* Whole document: */
+body{
+  font-family: 'Lato' !important;
+  font-size: 12pt;
+}
+
+code{
+  font-family: Liga Roboto Mono !important;
+  font-size: 12px;
+}
+
+pre{
+  font-family: Liga Roboto Mono !important;
+  font-size: 12px
+}
+
+td{
+  font-family: Lato !important;
+  font-size: 12pt;
+}

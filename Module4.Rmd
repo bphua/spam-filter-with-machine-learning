@@ -1,0 +1,37 @@
+---
+title: "Module 4 Report"
+author: '450132759 / 450463055'
+date: "October 31, 2018"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman # prettydoc theme
+    highlight: null # syntax highlighting
+    css: custom.css # custom css file to change font family and size
+---
+<!-- <style> -->
+<!-- @import url('https://fonts.googleapis.com/css?family=Roboto+Mono'); -->
+<!-- @import url('https://fonts.googleapis.com/css?family=Lato'); -->
+<!-- body{ -->
+<!--   font-family: 'Lato' !important; -->
+<!--   font-size: 12pt; -->
+<!-- } -->
+
+<!-- code{ -->
+<!--   font-family: 'Roboto Mono' !important; -->
+<!--   font-size: 12px; -->
+<!-- } -->
+
+<!-- pre{ -->
+<!--   font-family: 'Roboto Mono' !important; -->
+<!--   font-size: 12px -->
+<!-- } -->
+
+<!-- td{ -->
+<!--   font-family: Lato !important; -->
+<!--   font-size: 12pt; -->
+<!-- } -->
+<!-- </style> -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center")
+```
