@@ -33,7 +33,7 @@ output:
 <!-- </style> -->
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE, warning = FALSE, message = FALSE, fig.align = "center")
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center")
 ```
 
 ##Executive Summary
@@ -81,24 +81,80 @@ Above, we look at finding the complexity parameter that gives the least RMSE, wh
 
 ```{r randomforest}
 library(randomForest)
-tree_rf = randomForest
+tree_rf = randomForest(type ~ ., spam)
+tree_rf
 ```
 
 
 ###Logistic Regression
-```{r}
+```{r,  cache=TRUE}
 # install.packages("stargazer")
 # library(stargazer)
-spam_full_glm <- glm(type ~., family = binomial, data = spam)
+spam_full_glm <- glm(type ~ ., family = binomial, data = spam)
 spam_bw_aic = step(spam_full_glm,direction = "backward",trace=TRUE)
 spam_null_glm <- glm(type ~ 1, family = binomial, data = spam)
 spam_fw_aic = step(spam_full_glm,direction = "forward",trace=TRUE)
+
+spam = spam %>% mutate(pred_bw = predict(spam_bw_aic, type = "response"),
+         pred_bw = round(pred_bw))
+
+mean(spam$type != spam$pred_bw)
+library(caret)
+confusion.glm = confusionMatrix(
+  data = as.factor(spam$pred_bw), 
+  reference = as.factor(spam$type))
+confusion.glm
 # stargazer::stargazer(fm, step_model, type = "html", column.labels = c("Full model",
     # "Stepwise model"))
+
+spam = spam %>% mutate(pred_fw = predict(spam_fw_aic, type = "response"),
+         pred_fw = round(pred_fw))
+
+mean(spam$type != spam$pred_fw)
+library(caret)
+confusion.glm = confusionMatrix(
+  data = as.factor(spam$pred_fw), 
+  reference = as.factor(spam$type))
+confusion.glm
+
+train(spam_bw_aic,
+      data = spam, 
+      method = "glm",
+      family = "binomial",
+      trControl = trainControl(
+        method = "cv", number = 5,
+        verboseIter = FALSE
+      ))
+```
+We observe a 93% accuracy from the backwards AIC logistic model.
+###Nearest Neighbour
+```{r in.sample.5}
+knn5 = class::knn(train = spam, test = spam, cl = spam$type, k = 5)
+caret::confusionMatrix(knn5, spam$type)$table
+caret::confusionMatrix(knn5, spam$type)$overall[1] %>% round(2)
 ```
 
-###Nearest Neighbour
-
+```{r out.of.sample}
+cv_rep_acc = NA
+k = 1:50  # range of k in knn to consider
+for (i in k) {
+    cvSets = cvTools::cvFolds(n, 5)  # permute all the data, into 5 folds
+    cv_acc = NA  # initialise results vector
+    for (j in 1:K) {
+        test_id = cvSets$subsets[cvSets$which == j]
+        X_test = X[test_id, ]
+        X_train = X[-test_id, ]
+        y_test = y[test_id]
+        y_train = y[-test_id]
+        fit = class::knn(train = X_train, test = X_test, cl = y_train, 
+            k = i)
+        cv_acc[j] = caret::confusionMatrix(fit, y_test)$overall[1]
+    }
+    cv_rep_acc[i] = mean(cv_acc)
+}
+plot(cv_rep_acc ~ k)
+abline(v = which.max(cv_rep_acc))
+```
 
 
 
