@@ -33,7 +33,7 @@ output:
 <!-- </style> -->
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center")
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, warning = FALSE, message = FALSE, fig.align = "center")
 ```
 
 ##Executive Summary
@@ -50,6 +50,7 @@ data(spam, package = "kernlab")
 
 ```{r cleaning}
 spam <- spam %>% mutate(type = ifelse(type == "spam", 1, 0))
+spam$type = as.factor(spam$type)
 ```
 
 ###Decision Tree/Random Forest
@@ -63,7 +64,6 @@ rpart.plot(tree)
 ```
 
 ```{r in.sample}
-round(c(table(spam$type), 1813/(2788+1813)),3)
 library(caret)
 predicted = predict(tree, type = "class")
 confusionMatrix(
@@ -79,14 +79,22 @@ train(type ~ ., data = spam,
 ```
 Above, we look at finding the complexity parameter that gives the least RMSE, which is cp = 0.079.
 
+```{r randomforest}
+library(randomForest)
+tree_rf = randomForest
+```
+
+
 ###Logistic Regression
-```{r, results='asis'}
+```{r}
 # install.packages("stargazer")
-library(stargazer)
-fm = glm(type ~ 1, data = spam, family = binomial)
-step_model = step(fm, direction = "backward", trace = FALSE)
-stargazer::stargazer(fm, step_model, type = "html", column.labels = c("Full model",
-    "Stepwise model"))
+# library(stargazer)
+spam_full_glm <- glm(type ~., family = binomial, data = spam)
+spam_bw_aic = step(spam_full_glm,direction = "backward",trace=TRUE)
+spam_null_glm <- glm(type ~ 1, family = binomial, data = spam)
+spam_fw_aic = step(spam_full_glm,direction = "forward",trace=TRUE)
+# stargazer::stargazer(fm, step_model, type = "html", column.labels = c("Full model",
+    # "Stepwise model"))
 ```
 
 ###Nearest Neighbour
