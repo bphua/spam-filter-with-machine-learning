@@ -35,3 +35,64 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center")
 ```
+
+##Executive Summary
+##Introduction
+##Analysis
+```{r import}
+library(tidyverse)
+library(gridExtra)
+library(emmeans)
+library(ggfortify)
+# install.packages('kernlab')
+data(spam, package = "kernlab")
+```
+
+```{r cleaning}
+spam <- spam %>% mutate(type = ifelse(type == "spam", 1, 0))
+```
+
+###Decision Tree/Random Forest
+```{r}
+#install.packages("rpart")
+#install.packages("rpart.plot")
+library(rpart)
+library(rpart.plot)
+tree = rpart(factor(type) ~ ., data = spam, method = "class")
+rpart.plot(tree)
+```
+
+```{r in.sample}
+round(c(table(spam$type), 1813/(2788+1813)),3)
+library(caret)
+predicted = predict(tree, type = "class")
+confusionMatrix(
+  data = predicted,
+  reference = factor(spam$type),
+  positive = "1")
+```
+In sample performance of decision tree model gives an accuracy of 90.26%. We also observe a specificity value of 0.9519 and a sensitivity value of 0.8268.
+
+```{r complexity}
+train(type ~ ., data = spam,
+     method = "rpart", trControl = trainControl(method = "cv", number = 10))
+```
+Above, we look at finding the complexity parameter that gives the least RMSE, which is cp = 0.079.
+
+###Logistic Regression
+```{r, results='asis'}
+# install.packages("stargazer")
+library(stargazer)
+fm = glm(type ~ 1, data = spam, family = binomial)
+step_model = step(fm, direction = "backward", trace = FALSE)
+stargazer::stargazer(fm, step_model, type = "html", column.labels = c("Full model",
+    "Stepwise model"))
+```
+
+###Nearest Neighbour
+
+
+
+
+
+##Conclusion
