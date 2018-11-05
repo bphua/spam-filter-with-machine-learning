@@ -206,3 +206,11 @@ c(knn_acc,rpart_acc,glm_acc)
 We can see that the decision tree model gives the best accuracy, followed by the logistic regression model and the k-nearest neighbour model.
 
 ##Conclusion
+Based on accuracy and specificity, we've come to the conclusion that the random forest model gives the best accuracy and specificity, with values of 95.5% and 97.1% respectively. This is then followed by the decision tree model with complexity parameter of 4.3%, which gave 88.6% accuracy and 92.3% specificity. However, the in-sample performance 
+
+|                                 | Accuracy(In-Sample) | Specificity(In-Sample) | Accuracy(Out-of-Sample) | Specificity(Out-of-Sample) |
+|---------------------------------|---------------------|------------------------|-------------------------|----------------------------|
+| Decision Tree                   | 90.3%               | 95.2%                  | 88.6%                   | 93%                        |
+| Random Forest                   | -                   | -                      | 95.5%                   | 97.1%                      |
+| Logistic Regression (Backwards) | 93.2%               | 95.7%                  | 93.0%                   | 95.2%                      |
+| Nearest Neighbour               | 89%                 | 91%                    | 81.3%                   | 88.6%                      |

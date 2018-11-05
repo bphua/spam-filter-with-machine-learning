@@ -148,13 +148,13 @@ cm<span class="op">$</span>overall[<span class="dv">1</span>] <span class="op">%
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 4141, 4142, 4141, 4141, 4141, 4141, ... 
+## Summary of sample sizes: 4142, 4140, 4141, 4141, 4141, 4141, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   cp          Accuracy   Kappa    
-##   0.04302261  0.8630712  0.7091464
-##   0.14892443  0.7835196  0.5331924
-##   0.47655819  0.6707381  0.1919259
+##   0.04302261  0.8619856  0.7068827
+##   0.14892443  0.7935040  0.5600099
+##   0.47655819  0.6899017  0.2558178
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
 ## The final value used for the model was cp = 0.04302261.</code></pre>
@@ -352,6 +352,55 @@ glm_acc =<span class="st"> </span>glmFit1<span class="op">$</span>results<span c
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
+<p>Based on accuracy and specificity, we’ve come to the conclusion that the random forest model gives the best accuracy and specificity, with values of 95.5% and 97.1% respectively. This is then followed by the decision tree model with complexity parameter of 4.3%, which gave 88.6% accuracy and 92.3% specificity. However, the in-sample performance</p>
+<table>
+<colgroup>
+<col width="25%"></col>
+<col width="16%"></col>
+<col width="18%"></col>
+<col width="19%"></col>
+<col width="21%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Accuracy(In-Sample)</th>
+<th>Specificity(In-Sample)</th>
+<th>Accuracy(Out-of-Sample)</th>
+<th>Specificity(Out-of-Sample)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Decision Tree</td>
+<td>90.3%</td>
+<td>95.2%</td>
+<td>88.6%</td>
+<td>93%</td>
+</tr>
+<tr class="even">
+<td>Random Forest</td>
+<td>-</td>
+<td>-</td>
+<td>95.5%</td>
+<td>97.1%</td>
+</tr>
+<tr class="odd">
+<td>Logistic Regression (Backwards)</td>
+<td>93.2%</td>
+<td>95.7%</td>
+<td>93.0%</td>
+<td>95.2%</td>
+</tr>
+<tr class="even">
+<td>Nearest Neighbour</td>
+<td>89%</td>
+<td>91%</td>
+<td>81.3%</td>
+<td>88.6%</td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
 
