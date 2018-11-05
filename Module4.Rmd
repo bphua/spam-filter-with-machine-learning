@@ -37,7 +37,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align =
 ```
 
 ## Executive Summary
-In this report, we use various machine learning algorithms to make a prediction on whether an email is flagged as spam or nonspam. It is found that a binomial logistic model gives the best accuracy, followed by a decision tree model, and then a k-nearest neighbour model.
+In this report, we use various machine learning algorithms to make a prediction on whether an email is flagged as spam or nonspam. It is found that the random forest model is the best predictor, followed by logistic regression, decision tree, and then a k-nearest neighbour model.
 
 ## Introduction
 Flagging spam email for users is a crucial part of any email service, as it offers protection for users from phishing scams or from nefarious companies from flooding a user's inbox and drowing out legitimate emails. Fortunately, spam emails frequently contain certain characters or phrases that can easily be identified by scanning incoming emails. We obtain the data set from the University of Irvine Machine Learning Repository, which contains percentages of appearances of 56 different words or characters in an email. We also know that each of the 4601 emails in our data set is flagged as either spam or nonspam. As we do not want to misclassify legitimate emails as spam emails, our performance metric is the specificity of our models. We will start by fitting different models to our dataset and then identify which model gives the highest specificity.
@@ -205,7 +205,7 @@ c(knn_acc,rpart_acc,glm_acc)
 
 We can see that the decision tree model gives the best accuracy, followed by the logistic regression model and the k-nearest neighbour model.
 
-##Conclusion
+## Conclusion
 
 Below, we have summarized the performance metrics for all the models that we have tested. This is done with a 4.3% complexity parameter for the decision tree model, 38 variables for the backwards AIC model, and k = 5 for the nearest neighbour.
 
