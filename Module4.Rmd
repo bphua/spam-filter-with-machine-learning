@@ -144,26 +144,21 @@ confusion.glm = confusionMatrix(
   reference = as.factor(spam$type),
   positive = "1")
 confusion.glm
-
-# train(spam_bw_aic,
-#       data = spam, 
-#       method = "glm",
-#       family = "binomial",
-#       trControl = trainControl(
-#         method = "cv", number = 5,
-#         verboseIter = FALSE
-#       ))
 ```
-We observe a 93% accuracy from the backwards AIC logistic model.
+We observe a 93.22% accuracy from the backwards AIC logistic model, and a 93.13% accuracy from the forwards AIC logistic model. Furthermore, we observed specificity values of 95.73% and 95.62%, respectively. 
 
 ### Nearest Neighbour
+
+Here, we look at fitting a nearest neighbour model with k = 5.
 ```{r in.sample.5, cache = TRUE}
 knn5 = class::knn(train = spam, test = spam, cl = spam$type, k = 5)
 confusionMatrix(knn5, spam$type, positive = "1")
 caret::confusionMatrix(knn5, spam$type)$table
 caret::confusionMatrix(knn5, spam$type)$overall[1] %>% round(2)
 ```
-Here, we observe a specificity of 91.07%. 
+Here, we observe a specificity of 91.07%, with an accuracy of 88.5%. This model performs worse than the decision tree, random forest, or logistic regression model.
+
+We now check that k = 5 is the value of k that gives the best accuracy by using repeated cross-validation, with an out-of-sample accuracy of 80.92%.
 ```{r out.of.sample, cache = TRUE}
 fitControl = trainControl(method = "repeatedcv", number = 5, repeats = 10)
 knnFit1 = train(type ~ ., data = spam, method = "knn", trControl = fitControl, 
@@ -171,21 +166,22 @@ knnFit1 = train(type ~ ., data = spam, method = "knn", trControl = fitControl,
 knnFit1
 ```
 
-```{r, warning=TRUE}
-# knn_acc = max(knnFit1$results$Accuracy)
-# # decision tree
-# rpartFit1 = train(type ~ ., data = spam, method = "rpart", trControl = fitControl)
-# rpart_acc = max(rpartFit1$results$Accuracy)
-# rpart_acc
-# # random forests
-# rfFit1 = train(type ~ ., data = spam, method = "rf", trControl = fitControl)
+```{r overall, cache = TRUE}
+knn_acc = max(knnFit1$results$Accuracy)
+# decision tree
+rpartFit1 = train(type ~ ., data = spam, method = "rpart", trControl = fitControl)
+rpart_acc = max(rpartFit1$results$Accuracy)
+rpart_acc
+# random forests
+# rfFit1 = train(type ~ ., data = spam, method = "rf", trControl = trainControl(method = "repeatedcv", number = 5, repeats = 1))
 # rf_acc = max(rfFit1$results$Accuracy)
+# rf_acc
 # # glm
-# glmFit1 = train(type ~ ., data = spam, method = "glm", family = "binomial",
-#     trControl = fitControl)
-# glm_acc = glmFit1$results$Accuracy
-# knn_acc
-# glm_acc
+glmFit1 = train(type ~ ., data = spam, method = "glm", family = "binomial",
+    trControl = fitControl)
+glm_acc = glmFit1$results$Accuracy
+knn_acc
+glm_acc
 ```
 
 
