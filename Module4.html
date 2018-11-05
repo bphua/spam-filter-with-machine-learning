@@ -99,14 +99,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <!-- </style> -->
 <div id="executive-summary" class="section level2">
 <h2>Executive Summary</h2>
-<p>In this report, we use various machine learning algorithms to make a prediction on whether an email is flagged as spam or nonspam. It is found that a binomial logistic model gives the best accuracy, followed by a decision tree model, and then a k-nearest neighbour model.</p>
-</div>
-<div id="introduction" class="section level2">
-<h2>Introduction</h2>
-<p>Flagging spam email for users is a crucial part of any email service, as it offers protection for users from phishing scams or from nefarious companies from flooding a user’s inbox and drowing out legitimate emails. Fortunately, spam emails frequently contain certain characters or phrases that can easily be identified by scanning incoming emails. We obtain the data set from the University of Irvine Machine Learning Repository, which contains percentages of appearances of 56 different words or characters in an email. We also know that each of the 4601 emails in our data set is flagged as either spam or nonspam. We will start by fitting different models to our dataset and then identify which model gives the best accuracy.</p>
-</div>
-<div id="analysis" class="section level2">
-<h2>Analysis</h2>
+<p>In this report, we use various machine learning algorithms to make a prediction on whether an email is flagged as spam or nonspam. It is found that a binomial logistic model gives the best accuracy, followed by a decision tree model, and then a k-nearest neighbour model. ## Analysis</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
 <span class="kw">library</span>(gridExtra)
 <span class="kw">library</span>(emmeans)
@@ -157,7 +150,7 @@ predicted =<span class="st"> </span><span class="kw">predict</span>(tree, <span 
 ##                                          
 ##        'Positive' Class : 1              
 ## </code></pre>
-<p>In sample performance of decision tree model gives an accuracy of 90.26%. We also observe a specificity value of 0.9519 and a sensitivity value of 0.8268.</p>
+<p>In sample performance of decision tree model gives an accuracy of 90.26%. We also observe a specificity value of 0.9519 and a sensitivity value of 0.8268. The high specificity value is especially desirable in this case, as it indicates a low falso positive rate. This means that clean emails are rarely classified as spam.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">train</span>(type <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> spam,
      <span class="dt">method =</span> <span class="st">&quot;rpart&quot;</span>, <span class="dt">trControl =</span> <span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>))</code></pre></div>
 <pre><code>## CART 
@@ -168,13 +161,13 @@ predicted =<span class="st"> </span><span class="kw">predict</span>(tree, <span 
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 4141, 4141, 4140, 4141, 4141, 4142, ... 
+## Summary of sample sizes: 4142, 4140, 4141, 4141, 4141, 4141, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   cp          Accuracy   Kappa    
-##   0.04302261  0.8563405  0.6941419
-##   0.14892443  0.7920082  0.5565351
-##   0.47655819  0.6872652  0.2492336
+##   0.04302261  0.8628514  0.7087957
+##   0.14892443  0.8004836  0.5713814
+##   0.47655819  0.6892170  0.2489021
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
 ## The final value used for the model was cp = 0.04302261.</code></pre>
@@ -193,11 +186,11 @@ tree_rf</code></pre></div>
 ##                      Number of trees: 500
 ## No. of variables tried at each split: 7
 ## 
-##         OOB estimate of  error rate: 4.48%
+##         OOB estimate of  error rate: 4.59%
 ## Confusion matrix:
 ##      0    1 class.error
-## 0 2713   75  0.02690100
-## 1  131 1682  0.07225593</code></pre>
+## 0 2714   74  0.02654232
+## 1  137 1676  0.07556536</code></pre>
 <p>We observe an insample error of about 4.48%, which translate to an accuracy of about 95.52%. This is better than the observed accuracy from the decision tree model.</p>
 </div>
 <div id="logistic-regression" class="section level3">
@@ -286,18 +279,11 @@ confusion.glm</code></pre></div>
 ##                                           
 ##        'Positive' Class : 1               
 ## </code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># train(spam_bw_aic,</span>
-<span class="co">#       data = spam, </span>
-<span class="co">#       method = &quot;glm&quot;,</span>
-<span class="co">#       family = &quot;binomial&quot;,</span>
-<span class="co">#       trControl = trainControl(</span>
-<span class="co">#         method = &quot;cv&quot;, number = 5,</span>
-<span class="co">#         verboseIter = FALSE</span>
-<span class="co">#       ))</span></code></pre></div>
-<p>We observe a 93% accuracy from the backwards AIC logistic model.</p>
+<p>We observe a 93.22% accuracy from the backwards AIC logistic model, and a 93.13% accuracy from the forwards AIC logistic model. Furthermore, we observed specificity values of 95.73% and 95.62%, respectively.</p>
 </div>
 <div id="nearest-neighbour" class="section level3">
 <h3>Nearest Neighbour</h3>
+<p>Here, we look at fitting a nearest neighbour model with k = 5.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knn5 =<span class="st"> </span>class<span class="op">::</span><span class="kw">knn</span>(<span class="dt">train =</span> spam, <span class="dt">test =</span> spam, <span class="dt">cl =</span> spam<span class="op">$</span>type, <span class="dt">k =</span> <span class="dv">5</span>)
 <span class="kw">confusionMatrix</span>(knn5, spam<span class="op">$</span>type, <span class="dt">positive =</span> <span class="st">&quot;1&quot;</span>)</code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
@@ -334,7 +320,8 @@ confusion.glm</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">caret<span class="op">::</span><span class="kw">confusionMatrix</span>(knn5, spam<span class="op">$</span>type)<span class="op">$</span>overall[<span class="dv">1</span>] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span>)</code></pre></div>
 <pre><code>## Accuracy 
 ##     0.88</code></pre>
-<p>Here, we observe a specificity of 91.07%.</p>
+<p>Here, we observe a specificity of 91.07%, with an accuracy of 88.5%. This model performs worse than the decision tree, random forest, or logistic regression model.</p>
+<p>We now check that k = 5 is the value of k that gives the best accuracy by using repeated cross-validation, with an out-of-sample accuracy of 80.92%.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitControl =<span class="st"> </span><span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">5</span>, <span class="dt">repeats =</span> <span class="dv">10</span>)
 knnFit1 =<span class="st"> </span><span class="kw">train</span>(type <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> spam, <span class="dt">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="dt">trControl =</span> fitControl, 
     <span class="dt">tuneLength =</span> <span class="dv">10</span>)
@@ -364,20 +351,24 @@ knnFit1</code></pre></div>
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
 ## The final value used for the model was k = 5.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># knn_acc = max(knnFit1$results$Accuracy)</span>
-<span class="co"># # decision tree</span>
-<span class="co"># rpartFit1 = train(type ~ ., data = spam, method = &quot;rpart&quot;, trControl = fitControl)</span>
-<span class="co"># rpart_acc = max(rpartFit1$results$Accuracy)</span>
-<span class="co"># rpart_acc</span>
-<span class="co"># # random forests</span>
-<span class="co"># rfFit1 = train(type ~ ., data = spam, method = &quot;rf&quot;, trControl = fitControl)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knn_acc =<span class="st"> </span><span class="kw">max</span>(knnFit1<span class="op">$</span>results<span class="op">$</span>Accuracy)
+<span class="co"># decision tree</span>
+rpartFit1 =<span class="st"> </span><span class="kw">train</span>(type <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> spam, <span class="dt">method =</span> <span class="st">&quot;rpart&quot;</span>, <span class="dt">trControl =</span> fitControl)
+rpart_acc =<span class="st"> </span><span class="kw">max</span>(rpartFit1<span class="op">$</span>results<span class="op">$</span>Accuracy)
+rpart_acc</code></pre></div>
+<pre><code>## [1] 0.9348178</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># random forests</span>
+<span class="co"># rfFit1 = train(type ~ ., data = spam, method = &quot;rf&quot;, trControl = trainControl(method = &quot;repeatedcv&quot;, number = 5, repeats = 1))</span>
 <span class="co"># rf_acc = max(rfFit1$results$Accuracy)</span>
+<span class="co"># rf_acc</span>
 <span class="co"># # glm</span>
-<span class="co"># glmFit1 = train(type ~ ., data = spam, method = &quot;glm&quot;, family = &quot;binomial&quot;,</span>
-<span class="co">#     trControl = fitControl)</span>
-<span class="co"># glm_acc = glmFit1$results$Accuracy</span>
-<span class="co"># knn_acc</span>
-<span class="co"># glm_acc</span></code></pre></div>
+glmFit1 =<span class="st"> </span><span class="kw">train</span>(type <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> spam, <span class="dt">method =</span> <span class="st">&quot;glm&quot;</span>, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>,
+    <span class="dt">trControl =</span> fitControl)
+glm_acc =<span class="st"> </span>glmFit1<span class="op">$</span>results<span class="op">$</span>Accuracy
+knn_acc</code></pre></div>
+<pre><code>## [1] 0.8127369</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glm_acc</code></pre></div>
+<pre><code>## [1] 0.929754</code></pre>
 </div>
 </div>
 <div id="conclusion" class="section level2">
