@@ -148,13 +148,13 @@ cm<span class="op">$</span>overall[<span class="dv">1</span>] <span class="op">%
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 4142, 4140, 4141, 4141, 4141, 4141, ... 
+## Summary of sample sizes: 4141, 4141, 4141, 4141, 4141, 4141, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   cp          Accuracy   Kappa    
-##   0.04302261  0.8619856  0.7068827
-##   0.14892443  0.7935040  0.5600099
-##   0.47655819  0.6899017  0.2558178
+##   0.04302261  0.8622120  0.7075075
+##   0.14892443  0.7913664  0.5476661
+##   0.47655819  0.7444099  0.4090478
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
 ## The final value used for the model was cp = 0.04302261.</code></pre>
@@ -352,7 +352,7 @@ glm_acc =<span class="st"> </span>glmFit1<span class="op">$</span>results<span c
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>Based on accuracy and specificity, we’ve come to the conclusion that the random forest model gives the best accuracy and specificity, with values of 95.5% and 97.1% respectively. This is then followed by the decision tree model with complexity parameter of 4.3%, which gave 88.6% accuracy and 92.3% specificity. However, the in-sample performance</p>
+<p>Below, we have summarized the performance metrics for all the models that we have tested. This is done with a 4.3% complexity parameter for the decision tree model, 38 variables for the backwards AIC model, and k = 5 for the nearest neighbour.</p>
 <table>
 <colgroup>
 <col width="25%"></col>
@@ -401,6 +401,7 @@ glm_acc =<span class="st"> </span>glmFit1<span class="op">$</span>results<span c
 </tr>
 </tbody>
 </table>
+<p>Random forest gives the best accuracy and specificity, followed by logistic regression, decision trees, and then nearest neighbour.</p>
 </div>
 </section>
 
