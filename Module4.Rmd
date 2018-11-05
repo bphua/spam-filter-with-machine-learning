@@ -36,11 +36,10 @@ output:
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center")
 ```
 
-##Executive Summary
+## Executive Summary
 In this report, we use various machine learning algorithms to make a prediction on whether an email is flagged as spam or nonspam. It is found that a binomial logistic model gives the best accuracy, followed by a decision tree model, and then a k-nearest neighbour model.
-##Introduction
-Flagging spam email for users is a crucial part of any email service, as it offers protection for users from phishing scams or from nefarious companies from flooding a user's inbox and drowing out legitimate emails. Fortunately, spam emails frequently contain certain characters or phrases that can easily be identified by scanning incoming emails. We obtain the data set from the University of Irvine Machine Learning Repository, which contains percentages of appearances of 56 different words or characters in an email. We also know that each of the 4601 emails in our data set is flagged as either spam or nonspam. We will start by fitting different models to our dataset and then identify which model gives the best accuracy. It should be noted that classifying a spam email as non-spam is a less serious error as misclassifying a clean email as spam, so this will also be considered in the following analysis.
-##Analysis
+## Analysis
+
 ```{r import}
 library(tidyverse)
 library(gridExtra)
@@ -54,8 +53,10 @@ data(spam, package = "kernlab")
 spam <- spam %>% mutate(type = ifelse(type == "spam", 1, 0))
 spam$type = as.factor(spam$type)
 ```
+Here, we changed 
 
-###Decision Tree/Random Forest
+
+### Decision Tree
 ```{r}
 #install.packages("rpart")
 #install.packages("rpart.plot")
@@ -79,16 +80,22 @@ In sample performance of decision tree model gives an accuracy of 90.26%. We als
 train(type ~ ., data = spam,
      method = "rpart", trControl = trainControl(method = "cv", number = 10))
 ```
-Above, we look at finding the complexity parameter that gives the least RMSE, which is cp = 0.079.
+Above, we look at finding the complexity parameter that gives the least RMSE, which is cp = 0.0430, around 4.3%. The complexity parameter gives an out of sample accuracy of about 85.7%.
 
+
+### Random Forest
+
+Now, we look to fit a random forest model. 
 ```{r randomforest}
 library(randomForest)
 tree_rf = randomForest(type ~ ., spam)
 tree_rf
 ```
+We observe an insample error of about 4.48%, which translate to an accuracy of about 95.52%. This is better than the observed accuracy from the decision tree model.
 
+### Logistic Regression
+Here, we seek to fit a binomial logistic model. We find a suitable model using backwards and forwards AIC.
 
-###Logistic Regression
 ```{r logistic_regression, cache=TRUE, results='hide'}
 # install.packages("stargazer")
 # library(stargazer)
@@ -107,7 +114,8 @@ mean(spam$type != spam$pred_bw)
 library(caret)
 confusion.glm = confusionMatrix(
   data = as.factor(spam$pred_bw), 
-  reference = as.factor(spam$type))
+  reference = as.factor(spam$type),
+  positive = "1")
 confusion.glm
 # stargazer::stargazer(fm, step_model, type = "html", column.labels = c("Full model",
     # "Stepwise model"))
@@ -119,7 +127,8 @@ mean(spam$type != spam$pred_fw)
 library(caret)
 confusion.glm = confusionMatrix(
   data = as.factor(spam$pred_fw), 
-  reference = as.factor(spam$type))
+  reference = as.factor(spam$type),
+  positive = "1")
 confusion.glm
 
 # train(spam_bw_aic,
@@ -132,13 +141,15 @@ confusion.glm
 #       ))
 ```
 We observe a 93% accuracy from the backwards AIC logistic model.
-###Nearest Neighbour
+
+### Nearest Neighbour
 ```{r in.sample.5, cache = TRUE}
 knn5 = class::knn(train = spam, test = spam, cl = spam$type, k = 5)
+confusionMatrix(knn5, spam$type, positive = "1")
 caret::confusionMatrix(knn5, spam$type)$table
 caret::confusionMatrix(knn5, spam$type)$overall[1] %>% round(2)
 ```
-
+Here, we observe a specificity of 91.07%. 
 ```{r out.of.sample, cache = TRUE}
 fitControl = trainControl(method = "repeatedcv", number = 5, repeats = 10)
 knnFit1 = train(type ~ ., data = spam, method = "knn", trControl = fitControl, 
@@ -146,19 +157,21 @@ knnFit1 = train(type ~ ., data = spam, method = "knn", trControl = fitControl,
 knnFit1
 ```
 
-```{r}
+```{r, warning=TRUE}
 # knn_acc = max(knnFit1$results$Accuracy)
 # # decision tree
 # rpartFit1 = train(type ~ ., data = spam, method = "rpart", trControl = fitControl)
 # rpart_acc = max(rpartFit1$results$Accuracy)
+# rpart_acc
 # # random forests
 # rfFit1 = train(type ~ ., data = spam, method = "rf", trControl = fitControl)
 # rf_acc = max(rfFit1$results$Accuracy)
 # # glm
-# glmFit1 = train(type ~ ., data = spam, method = "glm", family = "binomial", 
+# glmFit1 = train(type ~ ., data = spam, method = "glm", family = "binomial",
 #     trControl = fitControl)
 # glm_acc = glmFit1$results$Accuracy
 # knn_acc
+# glm_acc
 ```
 
 
