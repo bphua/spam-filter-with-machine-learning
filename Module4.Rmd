@@ -89,13 +89,16 @@ tree_rf
 
 
 ###Logistic Regression
-```{r logistic_regression, cache=TRUE}
+```{r logistic_regression, cache=TRUE, results='hide'}
 # install.packages("stargazer")
 # library(stargazer)
 spam_full_glm <- glm(type ~ ., family = binomial, data = spam)
 spam_bw_aic = step(spam_full_glm,direction = "backward",trace=TRUE)
 spam_null_glm <- glm(type ~ 1, family = binomial, data = spam)
 spam_fw_aic = step(spam_full_glm,direction = "forward",trace=TRUE)
+```
+
+```{r log_regree_performance}
 
 spam = spam %>% mutate(pred_bw = predict(spam_bw_aic, type = "response"),
          pred_bw = round(pred_bw))
@@ -137,28 +140,6 @@ caret::confusionMatrix(knn5, spam$type)$overall[1] %>% round(2)
 ```
 
 ```{r out.of.sample, cache = TRUE}
-# X = spam %>% select(-type)
-# y = spam %>% select(type)
-# n = length(y)
-# K = 5  # number of CV folds
-# k = 1:10  # range of k in knn to consider
-# for (i in k) {
-#     cvSets = cvTools::cvFolds(n, K)  # permute all the data, into 5 folds
-#     cv_acc = NA  # initialise results vector
-#     for (j in 1:K) {
-#         test_id = cvSets$subsets[cvSets$which == j]
-#         X_test = X[test_id, ]
-#         X_train = X[-test_id, ]
-#         y_test = y[test_id]
-#         y_train = y[-test_id]
-#         fit = class::knn(train = X_train, test = X_test, cl = y_train, 
-#             k = i)
-#         cv_acc[j] = caret::confusionMatrix(fit, y_test)$overall[1]
-#     }
-#     cv_rep_acc[i] = mean(cv_acc)
-# }
-# plot(cv_rep_acc ~ k)
-# abline(v = which.max(cv_rep_acc))
 fitControl = trainControl(method = "repeatedcv", number = 5, repeats = 10)
 knnFit1 = train(type ~ ., data = spam, method = "knn", trControl = fitControl, 
     tuneLength = 10)
