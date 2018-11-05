@@ -37,7 +37,9 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align =
 ```
 
 ##Executive Summary
+In this report, we use various machine learning algorithms to make a prediction on whether an email is flagged as spam or nonspam. It is found that a binomial logistic model gives the best accuracy, followed by a decision tree model, and then a k-nearest neighbour model.
 ##Introduction
+Flagging spam email for users is a crucial part of any email service, as it offers protection for users from phishing scams or from nefarious companies from flooding a user's inbox and drowing out legitimate emails. Fortunately, spam emails frequently contain certain characters or phrases that can easily be identified by scanning incoming emails. We obtain the data set from the University of Irvine Machine Learning Repository, which contains percentages of appearances of 56 different words or characters in an email. We also know that each of the 4601 emails in our data set is flagged as either spam or nonspam. We will start by fitting different models to our dataset and then identify which model gives the best accuracy.
 ##Analysis
 ```{r import}
 library(tidyverse)
@@ -87,7 +89,7 @@ tree_rf
 
 
 ###Logistic Regression
-```{r,  cache=TRUE}
+```{r logistic_regression, cache=TRUE}
 # install.packages("stargazer")
 # library(stargazer)
 spam_full_glm <- glm(type ~ ., family = binomial, data = spam)
@@ -117,45 +119,66 @@ confusion.glm = confusionMatrix(
   reference = as.factor(spam$type))
 confusion.glm
 
-train(spam_bw_aic,
-      data = spam, 
-      method = "glm",
-      family = "binomial",
-      trControl = trainControl(
-        method = "cv", number = 5,
-        verboseIter = FALSE
-      ))
+# train(spam_bw_aic,
+#       data = spam, 
+#       method = "glm",
+#       family = "binomial",
+#       trControl = trainControl(
+#         method = "cv", number = 5,
+#         verboseIter = FALSE
+#       ))
 ```
 We observe a 93% accuracy from the backwards AIC logistic model.
 ###Nearest Neighbour
-```{r in.sample.5}
+```{r in.sample.5, cache = TRUE}
 knn5 = class::knn(train = spam, test = spam, cl = spam$type, k = 5)
 caret::confusionMatrix(knn5, spam$type)$table
 caret::confusionMatrix(knn5, spam$type)$overall[1] %>% round(2)
 ```
 
-```{r out.of.sample}
-cv_rep_acc = NA
-k = 1:50  # range of k in knn to consider
-for (i in k) {
-    cvSets = cvTools::cvFolds(n, 5)  # permute all the data, into 5 folds
-    cv_acc = NA  # initialise results vector
-    for (j in 1:K) {
-        test_id = cvSets$subsets[cvSets$which == j]
-        X_test = X[test_id, ]
-        X_train = X[-test_id, ]
-        y_test = y[test_id]
-        y_train = y[-test_id]
-        fit = class::knn(train = X_train, test = X_test, cl = y_train, 
-            k = i)
-        cv_acc[j] = caret::confusionMatrix(fit, y_test)$overall[1]
-    }
-    cv_rep_acc[i] = mean(cv_acc)
-}
-plot(cv_rep_acc ~ k)
-abline(v = which.max(cv_rep_acc))
+```{r out.of.sample, cache = TRUE}
+# X = spam %>% select(-type)
+# y = spam %>% select(type)
+# n = length(y)
+# K = 5  # number of CV folds
+# k = 1:10  # range of k in knn to consider
+# for (i in k) {
+#     cvSets = cvTools::cvFolds(n, K)  # permute all the data, into 5 folds
+#     cv_acc = NA  # initialise results vector
+#     for (j in 1:K) {
+#         test_id = cvSets$subsets[cvSets$which == j]
+#         X_test = X[test_id, ]
+#         X_train = X[-test_id, ]
+#         y_test = y[test_id]
+#         y_train = y[-test_id]
+#         fit = class::knn(train = X_train, test = X_test, cl = y_train, 
+#             k = i)
+#         cv_acc[j] = caret::confusionMatrix(fit, y_test)$overall[1]
+#     }
+#     cv_rep_acc[i] = mean(cv_acc)
+# }
+# plot(cv_rep_acc ~ k)
+# abline(v = which.max(cv_rep_acc))
+fitControl = trainControl(method = "repeatedcv", number = 5, repeats = 10)
+knnFit1 = train(type ~ ., data = spam, method = "knn", trControl = fitControl, 
+    tuneLength = 10)
+knnFit1
 ```
 
+```{r}
+# knn_acc = max(knnFit1$results$Accuracy)
+# # decision tree
+# rpartFit1 = train(type ~ ., data = spam, method = "rpart", trControl = fitControl)
+# rpart_acc = max(rpartFit1$results$Accuracy)
+# # random forests
+# rfFit1 = train(type ~ ., data = spam, method = "rf", trControl = fitControl)
+# rf_acc = max(rfFit1$results$Accuracy)
+# # glm
+# glmFit1 = train(type ~ ., data = spam, method = "glm", family = "binomial", 
+#     trControl = fitControl)
+# glm_acc = glmFit1$results$Accuracy
+# knn_acc
+```
 
 
 
