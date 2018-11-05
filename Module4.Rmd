@@ -82,6 +82,20 @@ train(type ~ ., data = spam,
 ```
 Above, we look at finding the complexity parameter that gives the least RMSE, which is cp = 0.0430, around 4.3%. The complexity parameter gives an out of sample accuracy of about 85.7%.
 
+```{r}
+tree_cp = rpart(factor(type) ~ ., data = spam, method = "class", control = rpart.control(cp = 0.043))
+rpart.plot(tree)
+```
+
+```{r}
+library(caret)
+predicted_cp = predict(tree_cp, type = "class")
+confusionMatrix(
+  data = predicted_cp,
+  reference = factor(spam$type),
+  positive = "1")
+```
+While this model suffers a drop of about 2% in both accuracy and specificity, the improved out-of-sample performance is preferred, as it allows the spam detection to deal with a wider range of emails, making it a more robust system.
 
 ### Random Forest
 
@@ -91,7 +105,7 @@ library(randomForest)
 tree_rf = randomForest(type ~ ., spam)
 tree_rf
 ```
-We observe an insample error of about 4.48%, which translate to an accuracy of about 95.52%. This is better than the observed accuracy from the decision tree model.
+We observe an out-of-bag estimated error rate of about 4.5%, which translate to an accuracy of about 95.5%. This is better than the observed accuracy from the decision tree model. Additionally the class error rate for the clean emails is even lower than the overall estimated error, resulting in a low rate of incorrectly labelling clean emails as spam.
 
 ### Logistic Regression
 Here, we seek to fit a binomial logistic model. We find a suitable model using backwards and forwards AIC.
