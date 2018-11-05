@@ -144,7 +144,7 @@ caret::confusionMatrix(knn5, spam$type)$overall[1] %>% round(2)
 ```
 Here, we observe a specificity of 91.07%, with an accuracy of 88.5%. This model performs worse than the decision tree, random forest, or logistic regression model.
 
-We now check that k = 5 is the value of k that gives the best accuracy by using repeated cross-validation, with an out-of-sample accuracy of 80.92%.
+We now check that k = 5 is the value of k that gives the best accuracy by using repeated cross-validation.
 ```{r out.of.sample, cache = TRUE}
 fitControl = trainControl(method = "repeatedcv", number = 5, repeats = 10)
 knnFit1 = train(type ~ ., data = spam, method = "knn", trControl = fitControl, 
@@ -152,12 +152,13 @@ knnFit1 = train(type ~ ., data = spam, method = "knn", trControl = fitControl,
 knnFit1
 ```
 
+
+Here, we look at the out of sample performance for kNN, decision trees, and logistic regression model.
 ```{r overall, cache = TRUE}
 knn_acc = max(knnFit1$results$Accuracy)
 # decision tree
 rpartFit1 = train(type ~ ., data = spam, method = "rpart", trControl = fitControl)
 rpart_acc = max(rpartFit1$results$Accuracy)
-rpart_acc
 # random forests
 # rfFit1 = train(type ~ ., data = spam, method = "rf", trControl = trainControl(method = "repeatedcv", number = 5, repeats = 1))
 # rf_acc = max(rfFit1$results$Accuracy)
@@ -166,10 +167,9 @@ rpart_acc
 glmFit1 = train(type ~ ., data = spam, method = "glm", family = "binomial",
     trControl = fitControl)
 glm_acc = glmFit1$results$Accuracy
-knn_acc
-glm_acc
+c(knn_acc,rpart_acc,glm_acc)
 ```
 
-
+We can see that the decision tree model gives the best accuracy, followed by the logistic regression model and the k-nearest neighbour model.
 
 ##Conclusion
