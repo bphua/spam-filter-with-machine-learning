@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 *.Rproj
+*.ini
+Module4_cache/
+Module4_files/
